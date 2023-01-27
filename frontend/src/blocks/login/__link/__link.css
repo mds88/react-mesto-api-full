@@ -1,0 +1,11 @@
+.login__link {
+    display: block;
+    margin: 0;
+    text-decoration: none;
+    margin-top: 15px;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 17px;
+    color: #FFFFFF;
+    text-align: center;
+}

@@ -1,0 +1,5 @@
+.element__del_visible {
+    visibility: visible;
+    /* opacity: 1;
+    transition: opacity .5s linear; */
+}

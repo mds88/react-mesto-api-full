@@ -1,0 +1,16 @@
+.profile__edit-avatar {
+    position: relative;
+    padding: 0;
+    border: none;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    overflow: hidden;
+    background-image: cover;
+}
+
+@media screen AND (max-width: 775px) {
+    .profile__edit-avatar {
+        justify-self: center;
+    }    
+}

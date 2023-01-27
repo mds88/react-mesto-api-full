@@ -1,0 +1,12 @@
+.element {
+    display: grid;
+    grid-template-columns: repeat(1, auto);
+    grid-template-rows: repeat(2, auto);
+    gap: 25px 0;
+    background-color: #fff;
+    color: #000;
+    border-radius: 10px;
+    padding-bottom: 25px;
+    overflow: hidden;
+    position: relative;
+}
