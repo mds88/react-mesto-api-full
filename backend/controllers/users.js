@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const NotFoundError = require('../errors/NotFoundError');
 
-const { MYSECRETKEY } = process.env;
+const { MYSECRETKEY = 'kjlkjghdgfbhbjdjh45hfbgbhf' } = process.env;
 
 function findUsers(res, next, id = undefined) {
   User.findById(id)
