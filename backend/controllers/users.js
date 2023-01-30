@@ -76,13 +76,14 @@ const login = (req, res, next) => {
       res.cookie('jwt', token, {
         maxAge: 3600000 * 24 * 7,
         httpOnly: true,
+        secure: true,
       }).send({ message: 'Аутентификация успешна' });
     })
     .catch(next);
 };
 
 const unLogin = (req, res) => {
-  res.cookie('jwt', {
+  res.cookie('jwt', '', {
     maxAge: -1,
   }).send({ message: 'Успешный выход' });
 };
