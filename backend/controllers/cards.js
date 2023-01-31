@@ -1,3 +1,4 @@
+const BadRequestError = require('../errors/BadRequestError');
 const ForbiddenError = require('../errors/ForbiddenError');
 const NotFoundError = require('../errors/NotFoundError');
 const Card = require('../models/card');
@@ -22,17 +23,22 @@ const deleteCard = (req, res, next) => {
   const ownerId = req.user._id;
   const { cardId } = req.params;
 
-  Card.findOne({ cardId })
+  Card.findOne({ _id: cardId })
     .orFail(new NotFoundError(`Карточка с id: ${cardId} не найдена!`))
     .then((card) => {
-      if (card.owner.toString() === ownerId) {
-        card.delete()
-          .then(() => res.status(200).send({ message: messages.cardDeleted }));
-      } else {
-        next(new ForbiddenError('Нельзя удалить чужую карточку'));
+      if (JSON.stringify(card.owner) !== JSON.stringify(ownerId)) {
+        throw new ForbiddenError('Нельзя удалить чужую карточку');
       }
+      return card.delete();
     })
-    .catch(next);
+    .then(() => res.status(200).send({ message: messages.cardDeleted }))
+    .catch((error) => {
+      if (error.name === 'CastError') {
+        next(new BadRequestError('Не правильный ID карточки'));
+        return;
+      }
+      next(error);
+    });
 };
 
 const commonActionDecorator = (action) => (req, res, next) => {
@@ -46,7 +52,13 @@ const commonActionDecorator = (action) => (req, res, next) => {
   ).populate(['owner', 'likes'])
     .orFail(new NotFoundError(`Карточка с id: ${cardId} не найдена!`))
     .then((card) => res.send({ card }))
-    .catch(next);
+    .catch((error) => {
+      if (error.name === 'CastError') {
+        next(new BadRequestError('Не правильный ID карточки'));
+        return;
+      }
+      next(error);
+    });
 };
 
 const likeCard = commonActionDecorator('$addToSet');

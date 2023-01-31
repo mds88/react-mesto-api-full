@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const NotFoundError = require('../errors/NotFoundError');
+const BadRequestError = require('../errors/BadRequestError');
 
 const { MYSECRETKEY = 'kjlkjghdgfbhbjdjh45hfbgbhf' } = process.env;
 
@@ -9,7 +10,13 @@ function findUsers(res, next, id = undefined) {
   User.findById(id)
     .orFail(new NotFoundError(`Пользователь с id: ${id} не найден!`))
     .then((user) => res.send({ user }))
-    .catch(next);
+    .catch((error) => {
+      if (error.name === 'CastError') {
+        next(new BadRequestError('Не правильный ID пользователя'));
+        return;
+      }
+      next(error);
+    });
 }
 
 const getUsers = (req, res, next) => {
@@ -53,7 +60,13 @@ const updateUser = (req, res, next) => {
   User.findByIdAndUpdate(userId, { name, about }, { new: true, runValidators: true })
     .orFail(new NotFoundError(`Пользователь с id: ${userId} не найден!`))
     .then((user) => res.send({ user }))
-    .catch(next);
+    .catch((error) => {
+      if (error.name === 'CastError') {
+        next(new BadRequestError('Не правильный ID пользователя'));
+        return;
+      }
+      next(error);
+    });
 };
 
 const updateUserAvatar = (req, res, next) => {
@@ -63,7 +76,13 @@ const updateUserAvatar = (req, res, next) => {
   User.findByIdAndUpdate(userId, { avatar }, { new: true, runValidators: true })
     .orFail(new NotFoundError(`Пользователь с id: ${userId} не найден!`))
     .then((user) => res.send({ user }))
-    .catch(next);
+    .catch((error) => {
+      if (error.name === 'CastError') {
+        next(new BadRequestError('Не правильный ID пользователя'));
+        return;
+      }
+      next(error);
+    });
 };
 
 const login = (req, res, next) => {
