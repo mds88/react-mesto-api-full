@@ -16,7 +16,13 @@ const postCard = (req, res, next) => {
 
   Card.create({ name, link, owner })
     .then((card) => res.send({ card }))
-    .catch(next);
+    .catch((error) => {
+      if (error.name === 'ValidationError') {
+        next(new BadRequestError(`Ошибка валидации данных! ${error.message}`));
+        return;
+      }
+      next(error);
+    });
 };
 
 const deleteCard = (req, res, next) => {

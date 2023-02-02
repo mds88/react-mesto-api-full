@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const NotFoundError = require('../errors/NotFoundError');
 const BadRequestError = require('../errors/BadRequestError');
+const ConflictError = require('../errors/ConflictError');
 
 const { MYSECRETKEY = 'kjlkjghdgfbhbjdjh45hfbgbhf' } = process.env;
 
@@ -50,7 +51,17 @@ const createUser = (req, res, next) => {
       delete userObj.password;
       res.send(userObj);
     })
-    .catch(next);
+    .catch((error) => {
+      if (error.name === 'ValidationError') {
+        next(new BadRequestError(`Ошибка валидации данных! ${error.message}`));
+        return;
+      }
+      if (error.code && error.code === 11000) {
+        next(new ConflictError(`Пользователь с Email: ${email} уже существует!`));
+        return;
+      }
+      next(error);
+    });
 };
 
 const updateUser = (req, res, next) => {
@@ -63,6 +74,10 @@ const updateUser = (req, res, next) => {
     .catch((error) => {
       if (error.name === 'CastError') {
         next(new BadRequestError('Не правильный ID пользователя'));
+        return;
+      }
+      if (error.name === 'ValidationError') {
+        next(new BadRequestError(`Ошибка валидации данных! ${error.message}`));
         return;
       }
       next(error);
@@ -79,6 +94,10 @@ const updateUserAvatar = (req, res, next) => {
     .catch((error) => {
       if (error.name === 'CastError') {
         next(new BadRequestError('Не правильный ID пользователя'));
+        return;
+      }
+      if (error.name === 'ValidationError') {
+        next(new BadRequestError(`Ошибка валидации данных! ${error.message}`));
         return;
       }
       next(error);
